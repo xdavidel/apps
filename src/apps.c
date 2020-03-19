@@ -3,17 +3,16 @@
 #include <string.h>
 #include "../include/dirent.h"
 
-#define EXE ".exe"
-#define BAT ".bat"
-#define COM ".com"
-#define MSC ".msc"
-#define VBS ".vbs"
-#define PY ".py"
-
-char* next_str(char* str, const char delim);
+unsigned int count_delim(const char* str, const char delim);
+char** str_to_arr(const char* str, const char delim, const unsigned int occurrences);
 
 int main() {
+    const char delim = ';';
     char* path = getenv("PATH");
+    char* pathext = getenv("PATHEXT");
+    const unsigned int delim_number = count_delim(pathext, delim);
+    char** extarr = str_to_arr(pathext, delim, delim_number);
+
     
     char* path_token = strtok(path, ";");
     while (path_token != NULL) {
@@ -22,25 +21,13 @@ int main() {
         
         struct dirent* ent;
 
-        char* pathext = getenv("PATHEXT");
-
+        
         while ((ent = readdir (dir)) != NULL) {
-            // char* pathexttekon = next_str(pathext, ';');
-            // while(pathexttekon != NULL) {
-            //     if (0 == strcmp(ent->d_name + ent->d_namlen - strlen(pathexttekon), pathexttekon)) {
-            //         printf("%s\n", ent->d_name);
-            //     }
-
-            //     pathexttekon = next_str(pathext, ';');
-            // }
-
-            if (0 == strcmp(ent->d_name + ent->d_namlen - strlen(EXE), EXE) ||
-                0 == strcmp(ent->d_name + ent->d_namlen - strlen(BAT), BAT) ||
-                0 == strcmp(ent->d_name + ent->d_namlen - strlen(COM), COM) ||
-                0 == strcmp(ent->d_name + ent->d_namlen - strlen(MSC), MSC) ||
-                0 == strcmp(ent->d_name + ent->d_namlen - strlen(VBS), VBS) ||
-                0 == strcmp(ent->d_name + ent->d_namlen - strlen(PY), PY) ) {
-                printf("%s\n", ent->d_name);
+            
+            for (unsigned int i = 0; i < delim_number; i++) {
+                if (0 == stricmp(ent->d_name + ent->d_namlen - strlen(extarr[i]), extarr[i])) {
+                    printf("%s\n", ent->d_name);
+                }
             }
         }
 
@@ -52,14 +39,36 @@ int main() {
     return 0;
 }
 
-char* next_str(char* str, const char delim) {
-    unsigned int i = 0;
-    for (; i < strlen(str); i++) {
-        if (str[i] == delim) break;
+unsigned int count_delim(const char* str, const char delim) {
+    unsigned int counter = 0;
+
+    for (unsigned int  i = 0; i < strlen(str); i++) {
+        if (str[i] == delim) counter++;
     }
 
-    str[i] = '\0';
-    str += i;
+    return counter;
+}
 
-    return (char*)(str - i);
+char** str_to_arr(const char* str, const char delim, const unsigned int occurrences) {
+    int delim_number = occurrences > 0 ? occurrences : count_delim(str, delim);
+    char** arr = (char**)malloc(sizeof(char*) * (delim_number + 1));
+
+    unsigned int index = 0;
+    unsigned int str_pos = 0;
+    while(delim_number >= 0) {
+        if (str[index] == delim || str[index] == '\0') {
+            unsigned int length = index - str_pos;
+            arr[delim_number] = (char*)malloc(sizeof(char) *(length + 1));
+            char* current = arr[delim_number];
+            strncpy(current, str + str_pos, length);
+            current[length] = '\0';
+
+            delim_number--;
+            str_pos = index + 1;
+        }
+
+        index++;
+    }
+
+    return arr;
 }

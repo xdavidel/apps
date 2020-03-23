@@ -13,6 +13,15 @@ The app prints out the names of the apps that can be found in the system PATH.
 3. Clone this repo (`git clone https://gitlab.com/xdavidel/apps.git`)
 4. Run `make` 
 
+### Build with TCC
+
+The Tiny C Compiler can produce smaller size apps and compiles faster most of the time.
+
+1. Download the [Tiny C Compiler](http://download.savannah.gnu.org/releases/tinycc/tcc-0.9.27-win32-bin.zip).
+3. Make sure `tcc.exe` is in your PATH.
+4. Clone this repo (`git clone https://gitlab.com/xdavidel/apps.git`)
+5. Run `maketcc.bat` 
+
 ### Credits
 
 * [dirent.h](https://github.com/tronkko/dirent/tree/master/include/stretchy_buffer.h) - by [Toni Rönkkö](https://github.com/tronkko)

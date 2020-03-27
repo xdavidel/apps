@@ -4,7 +4,7 @@
 #include <string.h>
 
 #define LNK_PATTERN ".lnk"
-#define START_MENU "/Microsoft/Windows/Start Menu/Programs"
+#define START_MENU "\\Microsoft\\Windows\\Start Menu\\Programs"
 
 typedef struct dirent dirent;
 
@@ -40,7 +40,7 @@ int main() {
                 if (0 ==
                     stricmp(ent->d_name + ent->d_namlen - strlen(extarr[i]),
                             extarr[i])) {
-                    printf("%s%s\n", path_token,ent->d_name);
+                    printf("%s\\%s\n", path_token,ent->d_name);
                 }
             }
         }
@@ -130,7 +130,7 @@ static void search_dir(const char *dirname, const char *pattern) {
 
             /* Append directory separator if not already there */
             if (c != ':' && c != '/' && c != '\\') {
-                *q++ = '/';
+                *q++ = '\\';
             }
 
             /* Append file name */
